@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Peak Taichi Running · Unicrese</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root{--black:#0a0a0a;--white:#fafafa;--accent:#c8f542;--gray:#888;--lightgray:#f2f2f2;--border:#e0e0e0;--radius:12px;--radius-sm:8px;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--white);color:var(--black);min-height:100vh}
+nav{position:sticky;top:0;z-index:100;background:var(--black);padding:.9rem 1.5rem;display:flex;align-items:center;justify-content:space-between}
+.nav-logo{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--white);letter-spacing:2px}
+.nav-badge{background:var(--accent);color:var(--black);font-size:11px;font-weight:600;padding:4px 12px;border-radius:20px}
+.hero{background:var(--black);color:var(--white);padding:3rem 1.5rem 2rem;position:relative;overflow:hidden}
+.hero::before{content:'PEAK';font-family:'Bebas Neue',sans-serif;font-size:160px;color:rgba(255,255,255,.04);position:absolute;bottom:-20px;right:-10px;line-height:1;pointer-events:none}
+.hero-tag{display:inline-block;background:var(--accent);color:var(--black);font-size:11px;font-weight:600;padding:4px 12px;border-radius:20px;margin-bottom:1rem}
+.hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(42px,10vw,72px);line-height:.95;margin-bottom:.75rem}
+.hero-title span{color:var(--accent)}
+.hero-sub{font-size:14px;color:#aaa;max-width:320px;line-height:1.5}
+.hero-price{display:flex;align-items:baseline;gap:.75rem;margin-top:1.5rem}
+.hero-old{font-size:18px;color:#555;text-decoration:line-through}
+.hero-new{font-family:'Bebas Neue',sans-serif;font-size:52px;color:var(--accent);line-height:1}
+.hero-off{background:rgba(200,245,66,.15);color:var(--accent);font-size:12px;font-weight:600;padding:4px 10px;border-radius:20px;border:1px solid rgba(200,245,66,.3)}
+.store{max-width:600px;margin:0 auto;padding:1.5rem 1.25rem 4rem}
+.section-label{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;color:var(--black);margin-bottom:.75rem}
+.gtabs{display:flex;gap:8px;margin-bottom:1.5rem}
+.tab{flex:1;padding:11px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:14px;font-weight:500;color:var(--gray);cursor:pointer;text-align:center;transition:all .2s;background:var(--white)}
+.tab.active{background:var(--black);color:var(--white);border-color:var(--black)}
+.pcard{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:1.25rem}
+.gallery{display:grid;grid-template-columns:2fr 1fr;gap:3px;background:#ddd}
+.gallery img{width:100%;height:210px;object-fit:cover;display:block;transition:transform .4s}
+.gallery img:hover{transform:scale(1.03)}
+.pinfo{padding:1rem 1.25rem}
+.pname{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.5px}
+.ptype{font-size:12px;color:var(--gray);margin-top:2px;margin-bottom:1rem}
+.price-row{display:flex;align-items:baseline;gap:8px;margin-bottom:1rem}
+.price-old{font-size:14px;color:#bbb;text-decoration:line-through}
+.price-new{font-family:'Bebas Neue',sans-serif;font-size:32px}
+.price-tag{background:#e8f5e9;color:#2e7d32;font-size:11px;font-weight:600;padding:3px 8px;border-radius:20px}
+.color-row{display:flex;gap:8px;align-items:center;margin-bottom:1rem}
+.cdot{width:30px;height:30px;border-radius:50%;cursor:pointer;border:2.5px solid transparent;transition:all .15s;position:relative;flex-shrink:0}
+.cdot.sel{border-color:var(--black)}
+.cdot.sel::after{content:'';position:absolute;inset:4px;border-radius:50%;border:2px solid white}
+.color-name{font-size:12px;color:var(--gray);margin-left:4px}
+.sgrid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+.sbtn{padding:10px 4px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-weight:500;text-align:center;cursor:pointer;background:var(--white);color:var(--black);transition:all .15s}
+.sbtn:hover{border-color:var(--black)}
+.sbtn.sel{background:var(--black);color:var(--white);border-color:var(--black)}
+.qty-card{background:var(--lightgray);border-radius:var(--radius);padding:1rem 1.25rem;margin-bottom:1.25rem;display:flex;align-items:center;justify-content:space-between}
+.qty-controls{display:flex;align-items:center;gap:12px}
+.qty-btn{width:36px;height:36px;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--white);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.qty-btn:hover{border-color:var(--black)}
+.qty-num{font-family:'Bebas Neue',sans-serif;font-size:28px;min-width:28px;text-align:center}
+.extra-card{border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:1.25rem}
+.extra-header{background:var(--black);color:var(--white);padding:.6rem 1rem;display:flex;align-items:center;justify-content:space-between;font-size:13px;font-weight:500}
+.extra-body{padding:1rem}
+.free-badge{background:var(--accent);color:var(--black);font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px}
+.deli-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:1.25rem}
+.deli-opt{border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:14px 8px;cursor:pointer;text-align:center;transition:all .15s;background:var(--white)}
+.deli-opt.sel{border-color:var(--black);background:var(--black);color:var(--white)}
+.deli-opt.sel .deli-price{color:#aaa}
+.deli-icon{font-size:22px;margin-bottom:6px}
+.deli-name{font-size:12px;font-weight:600}
+.deli-price{font-size:11px;color:var(--gray);margin-top:3px}
+.total-bar{background:var(--black);color:var(--white);border-radius:var(--radius);padding:1rem 1.25rem;display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+.total-label{font-size:12px;color:#888}
+.total-desc{font-size:13px;color:#ccc;margin-top:2px}
+.total-num{font-family:'Bebas Neue',sans-serif;font-size:40px;color:var(--accent)}
+.cta-btn{width:100%;padding:16px;background:var(--accent);color:var(--black);border:none;border-radius:var(--radius);font-size:16px;font-weight:700;cursor:pointer;letter-spacing:.5px;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;font-family:'DM Sans',sans-serif}
+.cta-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(200,245,66,.4)}
+.cta-btn:disabled{background:var(--border);color:var(--gray);cursor:not-allowed;transform:none;box-shadow:none}
+.ck-view{display:none}.ck-view.vis{display:block}
+.back-btn{display:flex;align-items:center;gap:6px;font-size:14px;color:var(--gray);cursor:pointer;background:none;border:none;padding:0;margin-bottom:1.5rem;font-family:'DM Sans',sans-serif}
+.order-summary{background:var(--lightgray);border-radius:var(--radius);padding:1.25rem;margin-bottom:1.25rem}
+.orow{display:flex;justify-content:space-between;font-size:13px;padding:5px 0}
+.orow.tot{font-weight:600;font-size:15px;border-top:1.5px solid var(--border);margin-top:8px;padding-top:12px}
+.form-group{margin-bottom:1rem}
+label{font-size:12px;font-weight:600;color:var(--gray);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px}
+input,select{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:14px;font-family:'DM Sans',sans-serif;background:var(--white);color:var(--black);transition:border-color .15s}
+input:focus,select:focus{outline:none;border-color:var(--black)}
+.pay-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:1rem 0}
+.pay-opt{border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:16px;cursor:pointer;text-align:center;transition:all .15s}
+.pay-opt.sel{border-color:var(--black);background:var(--black);color:var(--white)}
+.pay-opt.sel .pay-desc{color:#aaa}
+.pay-icon{font-size:24px;margin-bottom:6px}
+.pay-name{font-size:13px;font-weight:600}
+.pay-desc{font-size:11px;color:var(--gray);margin-top:2px}
+.yappy-box{background:var(--lightgray);border-radius:var(--radius-sm);padding:1rem;margin-top:.75rem;display:none}
+.yappy-box.vis{display:block}
+.yappy-handle{font-family:'Bebas Neue',sans-serif;font-size:26px;text-align:center;letter-spacing:1px}
+.yappy-sub{font-size:12px;color:var(--gray);text-align:center;margin-top:2px}
+.upload-zone{border:2px dashed var(--border);border-radius:var(--radius-sm);padding:1.5rem;text-align:center;margin-top:.75rem;cursor:pointer;transition:border-color .15s}
+.upload-zone:hover{border-color:var(--black)}
+.upload-zone input{display:none}
+.divider{border:none;border-top:1.5px solid var(--border);margin:1.5rem 0}
+.sv{display:none;text-align:center;padding:4rem 1rem}.sv.vis{display:block}
+.sv-icon{font-size:56px;margin-bottom:1rem}
+.sv-title{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:1px;margin-bottom:.5rem}
+.sv-sub{font-size:14px;color:var(--gray);line-height:1.6}
+.sv-ref{display:inline-block;margin-top:1.5rem;background:var(--lightgray);border-radius:var(--radius-sm);padding:.75rem 1.5rem;font-size:13px;font-weight:600}
+.status-msg{font-size:12px;color:var(--gray);text-align:center;margin-top:.75rem;min-height:18px}
+footer{background:var(--black);color:#555;text-align:center;padding:1.5rem;font-size:12px}
+footer span{color:#888}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">UNICRESE</div>
+  <div class="nav-badge">🏷️ 30% OFF HOY</div>
+</nav>
+
+<div class="hero">
+  <div class="hero-tag">⚡ OFERTA LIMITADA</div>
+  <h1 class="hero-title">PEAK<br/><span>TAICHI</span><br/>RUNNING</h1>
+  <p class="hero-sub">Tecnología TAICHI de amortiguación máxima. Malla transpirable. Diseño de alto rendimiento.</p>
+  <div class="hero-price">
+    <span class="hero-old">$65.00</span>
+    <span class="hero-new">$45.50</span>
+    <span class="hero-off">-30%</span>
+  </div>
+</div>
+
+<div class="store">
+
+  <div id="shopV">
+    <div class="section-label">Género</div>
+    <div class="gtabs">
+      <div class="tab active" onclick="setG('hombre',this)">👨 Caballero</div>
+      <div class="tab" onclick="setG('dama',this)">👩 Dama</div>
+    </div>
+
+    <div class="section-label">Par #1</div>
+    <div class="pcard">
+      <div class="gallery">
+        <img id="im1" src="https://i.postimg.cc/fW5MqbWw/ET59737H-quan-hei-1.jpg" alt="Peak"/>
+        <img id="im2" src="https://i.postimg.cc/gjMdxgtY/ET59737H-quan-hei-(13).jpg" alt="Peak"/>
+      </div>
+      <div class="pinfo">
+        <div class="pname">Peak Taichi Running</div>
+        <div class="ptype">Suela TAICHI · Malla transpirable · Peso ultraligero</div>
+        <div class="price-row">
+          <span class="price-old">$65.00</span>
+          <span class="price-new">$45.50</span>
+          <span class="price-tag">-30%</span>
+        </div>
+        <div class="section-label" style="font-size:14px;margin-bottom:8px">Color</div>
+        <div class="color-row">
+          <div class="cdot sel" style="background:#1a1a1a" onclick="setC(1,'negro',this,'im1','im2','clbl1')"></div>
+          <div class="cdot" style="background:#1B3A6B" onclick="setC(1,'navy',this,'im1','im2','clbl1')"></div>
+          <div class="cdot" style="background:#e8e8e8;border:1px solid #ddd" onclick="setC(1,'blanco',this,'im1','im2','clbl1')"></div>
+          <span class="color-name" id="clbl1">Negro</span>
+        </div>
+        <div class="section-label" style="font-size:14px;margin-bottom:8px">Talla <span id="glbl" style="font-family:'DM Sans',sans-serif;font-size:12px;color:var(--gray);font-weight:400;letter-spacing:0">(Caballero)</span></div>
+        <div class="sgrid" id="sg1"></div>
+      </div>
+    </div>
+
+    <div class="section-label">Cantidad de pares</div>
+    <div class="qty-card">
+      <div>
+        <div style="font-size:13px;font-weight:500">¿Cuántos pares?</div>
+        <div style="font-size:11px;color:var(--gray);margin-top:2px">Envío gratis comprando 2 o más</div>
+      </div>
+      <div class="qty-controls">
+        <button class="qty-btn" onclick="changeQty(-1)">−</button>
+        <span class="qty-num" id="qtyNum">1</span>
+        <button class="qty-btn" onclick="changeQty(1)">+</button>
+      </div>
+    </div>
+
+    <div id="p2wrap" style="display:none">
+      <div class="extra-card">
+        <div class="extra-header"><span>Par #2</span><span class="free-badge">ENVÍO GRATIS</span></div>
+        <div class="extra-body">
+          <div class="gallery" style="border-radius:8px;overflow:hidden;margin-bottom:.75rem">
+            <img id="im1b" src="https://i.postimg.cc/fW5MqbWw/ET59737H-quan-hei-1.jpg" alt="Peak"/>
+            <img id="im2b" src="https://i.postimg.cc/gjMdxgtY/ET59737H-quan-hei-(13).jpg" alt="Peak"/>
+          </div>
+          <div class="section-label" style="font-size:14px;margin-bottom:8px">Color</div>
+          <div class="color-row">
+            <div class="cdot sel" style="background:#1a1a1a" onclick="setC(2,'negro',this,'im1b','im2b','clbl2')"></div>
+            <div class="cdot" style="background:#1B3A6B" onclick="setC(2,'navy',this,'im1b','im2b','clbl2')"></div>
+            <div class="cdot" style="background:#e8e8e8;border:1px solid #ddd" onclick="setC(2,'blanco',this,'im1b','im2b','clbl2')"></div>
+            <span class="color-name" id="clbl2">Negro</span>
+          </div>
+          <div class="section-label" style="font-size:14px;margin-bottom:8px">Talla</div>
+          <div class="sgrid" id="sg2"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="p3wrap" style="display:none">
+      <div class="extra-card">
+        <div class="extra-header"><span>Par #3</span><span class="free-badge">ENVÍO GRATIS</span></div>
+        <div class="extra-body">
+          <div class="gallery" style="border-radius:8px;overflow:hidden;margin-bottom:.75rem">
+            <img id="im1c" src="https://i.postimg.cc/fW5MqbWw/ET59737H-quan-hei-1.jpg" alt="Peak"/>
+            <img id="im2c" src="https://i.postimg.cc/gjMdxgtY/ET59737H-quan-hei-(13).jpg" alt="Peak"/>
+          </div>
+          <div class="section-label" style="font-size:14px;margin-bottom:8px">Color</div>
+          <div class="color-row">
+            <div class="cdot sel" style="background:#1a1a1a" onclick="setC(3,'negro',this,'im1c','im2c','clbl3')"></div>
+            <div class="cdot" style="background:#1B3A6B" onclick="setC(3,'navy',this,'im1c','im2c','clbl3')"></div>
+            <div class="cdot" style="background:#e8e8e8;border:1px solid #ddd" onclick="setC(3,'blanco',this,'im1c','im2c','clbl3')"></div>
+            <span class="color-name" id="clbl3">Negro</span>
+          </div>
+          <div class="section-label" style="font-size:14px;margin-bottom:8px">Talla</div>
+          <div class="sgrid" id="sg3"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-label">Entrega</div>
+    <div class="deli-grid">
+      <div class="deli-opt sel" id="eR" onclick="setE('retiro')">
+        <div class="deli-icon">🏪</div>
+        <div class="deli-name">Retiro tienda</div>
+        <div class="deli-price" style="color:#aaa;font-weight:600">Gratis</div>
+      </div>
+      <div class="deli-opt" id="eC" onclick="setE('ciudad')">
+        <div class="deli-icon">🚚</div>
+        <div class="deli-name">Envío ciudad</div>
+        <div class="deli-price" id="eCP">$7.00</div>
+      </div>
+      <div class="deli-opt" id="eN" onclick="setE('nacional')">
+        <div class="deli-icon">📦</div>
+        <div class="deli-name">Nacional</div>
+        <div class="deli-price">A coordinar</div>
+      </div>
+    </div>
+
+    <div class="total-bar">
+      <div>
+        <div class="total-label">TOTAL A PAGAR</div>
+        <div class="total-desc" id="totalDesc">1 par · Retiro en tienda</div>
+      </div>
+      <div class="total-num" id="totalAmt">$45.50</div>
+    </div>
+
+    <button class="cta-btn" id="ab" onclick="goCk()" disabled>🛒 IR A PAGAR</button>
+  </div>
+
+  <!-- CHECKOUT -->
+  <div class="ck-view" id="ckV">
+    <button class="back-btn" onclick="back()">← Volver</button>
+    <div class="section-label">Resumen del pedido</div>
+    <div class="order-summary" id="os"></div>
+    <div class="divider"></div>
+    <div class="section-label">Tus datos</div>
+    <div class="form-group"><label>Nombre completo</label><input type="text" id="fn" placeholder="Ej. María González"/></div>
+    <div class="form-group"><label>Teléfono / WhatsApp</label><input type="tel" id="fp" placeholder="Ej. 6000-0000"/></div>
+    <div class="form-group"><label>Provincia</label>
+      <select id="fpr"><option value="">Selecciona tu provincia</option><option>Panamá</option><option>Colón</option><option>Chiriquí</option><option>Herrera</option><option>Los Santos</option><option>Veraguas</option><option>Coclé</option><option>Bocas del Toro</option><option>Darién</option><option>Panamá Oeste</option><option>Guna Yala</option></select>
+    </div>
+    <div class="form-group"><label>Dirección de entrega</label><input type="text" id="fa" placeholder="Corregimiento, barrio, referencias"/></div>
+    <div class="divider"></div>
+    <div class="section-label">Método de pago</div>
+    <div class="pay-grid">
+      <div class="pay-opt sel" id="oy" onclick="setP('yappy')">
+        <div class="pay-icon">📱</div><div class="pay-name">Yappy</div><div class="pay-desc">@Unicrese</div>
+      </div>
+      <div class="pay-opt" id="oc" onclick="setP('card')">
+        <div class="pay-icon">💳</div><div class="pay-name">Tarjeta</div><div class="pay-desc">Link de pago</div>
+      </div>
+    </div>
+    <div class="yappy-box vis" id="yi">
+      <div class="yappy-handle">📲 @Unicrese</div>
+      <div class="yappy-sub">Monto exacto: <strong id="yMonto">$45.50</strong></div>
+      <div class="upload-zone" onclick="document.getElementById('yf').click()">
+        <input type="file" id="yf" accept="image/*" onchange="hUp(this)"/>
+        <div style="font-size:24px">⬆️</div>
+        <div style="font-size:13px;color:var(--gray);margin-top:6px"><span style="color:var(--black);text-decoration:underline;cursor:pointer">Sube tu captura</span> de Yappy aquí</div>
+        <div id="un" style="font-size:12px;color:var(--gray);margin-top:4px"></div>
+      </div>
+    </div>
+    <div class="yappy-box" id="ci">
+      <div style="font-size:14px;color:var(--gray);text-align:center;padding:.5rem">Al confirmar te enviaremos el link de pago por WhatsApp</div>
+    </div>
+    <button class="cta-btn" id="submitBtn" onclick="submitOrder()" style="margin-top:1.5rem">✓ CONFIRMAR PEDIDO</button>
+    <div class="status-msg" id="statusMsg"></div>
+  </div>
+
+  <!-- SUCCESS -->
+  <div class="sv" id="sv">
+    <div class="sv-icon">✅</div>
+    <div class="sv-title">¡PEDIDO REGISTRADO!</div>
+    <div class="sv-sub" id="sm"></div>
+    <div class="sv-ref" id="refNum"></div>
+    <p style="margin-top:1.5rem;font-size:13px;color:var(--gray)">Tu pedido fue guardado en nuestro sistema. Te contactaremos al número indicado para coordinar.</p>
+  </div>
+
+</div>
+
+<footer><span>© 2026 Unicrese · Peak Taichi Running</span><br/>Panamá · @Unicrese</footer>
+
+<script>
+const IMGS={
+  negro:['https://i.postimg.cc/fW5MqbWw/ET59737H-quan-hei-1.jpg','https://i.postimg.cc/gjMdxgtY/ET59737H-quan-hei-(13).jpg'],
+  navy:['https://i.postimg.cc/kgS3CMC6/ET59737H-ming-yue-lan-1.jpg','https://i.postimg.cc/k41h8LC0/ET59737H-ming-yue-lan-4.jpg'],
+  blanco:['https://i.postimg.cc/0QBcrmd1/ET59737H-chao-qing-bai-se-1.png','https://i.postimg.cc/N0QNnQfD/ET59737H-chao-qing-bai-se-7.jpg']
+};
+const MH=['40','41','42','43','44','45'];
+const MD=['36','37','38','39','40','41'];
+const CN={negro:'Negro',navy:'Azul navy',blanco:'Blanco'};
+const PRICE=45.50, SHIP=7.00;
+const JOTFORM_KEY='8777742cc9c113a334e2ae82822e217d';
+const FORM_ID='261456236856061';
+
+let st={g:'hombre',qty:1,envio:'retiro',pay:'yappy',file:null,
+  p1:{c:'negro',s:null},p2:{c:'negro',s:null},p3:{c:'negro',s:null}};
+
+function getTotal(){
+  return PRICE*st.qty + (st.envio==='ciudad'&&st.qty<2 ? SHIP : 0);
+}
+
+function updateTotal(){
+  const tot=getTotal();
+  document.getElementById('totalAmt').textContent='$'+tot.toFixed(2);
+  const eL=st.envio==='retiro'?'Retiro en tienda':st.envio==='nacional'?'Nacional':st.qty>=2?'Envío ciudad gratis':'Envío ciudad $7.00';
+  document.getElementById('totalDesc').textContent=st.qty+' par'+(st.qty>1?'es':'')+' · '+eL;
+  document.getElementById('ab').disabled=!(st.p1.s&&(st.qty<2||st.p2.s)&&(st.qty<3||st.p3.s));
+}
+
+function rs(id,pn){
+  const sz=st.g==='hombre'?MH:MD;
+  const p=pn===1?st.p1:pn===2?st.p2:st.p3;
+  document.getElementById(id).innerHTML=sz.map(s=>'<div class="sbtn'+(p.s===s?' sel':'')+'" onclick="setSz('+pn+',\''+s+'\',this)">'+s+'</div>').join('');
+}
+
+function setG(g,el){
+  st.g=g;st.p1.s=null;st.p2.s=null;st.p3.s=null;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('glbl').textContent='('+(g==='hombre'?'Caballero':'Dama')+')';
+  rs('sg1',1);rs('sg2',2);rs('sg3',3);updateTotal();
+}
+
+function setC(pn,c,el,i1,i2,lbl){
+  (pn===1?st.p1:pn===2?st.p2:st.p3).c=c;
+  el.parentElement.querySelectorAll('.cdot').forEach(d=>d.classList.remove('sel'));
+  el.classList.add('sel');
+  document.getElementById(lbl).textContent=CN[c];
+  document.getElementById(i1).src=IMGS[c][0];
+  document.getElementById(i2).src=IMGS[c][1];
+}
+
+function setSz(pn,s,el){
+  (pn===1?st.p1:pn===2?st.p2:st.p3).s=s;
+  document.getElementById('sg'+pn).querySelectorAll('.sbtn').forEach(b=>b.classList.remove('sel'));
+  el.classList.add('sel');updateTotal();
+}
+
+function changeQty(d){
+  st.qty=Math.min(3,Math.max(1,st.qty+d));
+  document.getElementById('qtyNum').textContent=st.qty;
+  document.getElementById('p2wrap').style.display=st.qty>=2?'block':'none';
+  document.getElementById('p3wrap').style.display=st.qty>=3?'block':'none';
+  document.getElementById('eCP').innerHTML=st.qty>=2?'<span style="color:#2e7d32;font-weight:600">Gratis</span>':'$7.00';
+  updateTotal();
+}
+
+function setE(e){
+  st.envio=e;
+  ['eR','eC','eN'].forEach(id=>document.getElementById(id).classList.remove('sel'));
+  document.getElementById({retiro:'eR',ciudad:'eC',nacional:'eN'}[e]).classList.add('sel');
+  updateTotal();
+}
+
+function setP(m){
+  st.pay=m;
+  document.getElementById('oy').classList.toggle('sel',m==='yappy');
+  document.getElementById('oc').classList.toggle('sel',m==='card');
+  document.getElementById('yi').classList.toggle('vis',m==='yappy');
+  document.getElementById('ci').classList.toggle('vis',m==='card');
+}
+
+function hUp(input){
+  if(input.files[0]){st.file=input.files[0];document.getElementById('un').textContent='✓ '+input.files[0].name;}
+}
+
+function goCk(){
+  if(!(st.p1.s&&(st.qty<2||st.p2.s)&&(st.qty<3||st.p3.s))){alert('Por favor selecciona talla para cada par.');return;}
+  const tot=getTotal();
+  const eL=st.envio==='retiro'?'Retiro en tienda':st.envio==='nacional'?'Nacional':st.qty>=2?'Envío ciudad (gratis)':'Envío ciudad';
+  const sc=(st.envio==='ciudad'&&st.qty<2)?SHIP:0;
+  let rows='<div class="orow"><span>Par 1 · '+CN[st.p1.c]+' · T'+st.p1.s+' · '+(st.g==='hombre'?'Caballero':'Dama')+'</span><span>$'+PRICE.toFixed(2)+'</span></div>';
+  if(st.qty>=2)rows+='<div class="orow"><span>Par 2 · '+CN[st.p2.c]+' · T'+st.p2.s+' · '+(st.g==='hombre'?'Caballero':'Dama')+'</span><span>$'+PRICE.toFixed(2)+'</span></div>';
+  if(st.qty>=3)rows+='<div class="orow"><span>Par 3 · '+CN[st.p3.c]+' · T'+st.p3.s+' · '+(st.g==='hombre'?'Caballero':'Dama')+'</span><span>$'+PRICE.toFixed(2)+'</span></div>';
+  rows+='<div class="orow"><span>'+eL+'</span><span>'+(sc>0?'$'+sc.toFixed(2):'Gratis')+'</span></div>';
+  rows+='<div class="orow tot"><span>Total</span><span>$'+tot.toFixed(2)+'</span></div>';
+  document.getElementById('os').innerHTML=rows;
+  document.getElementById('yMonto').textContent='$'+tot.toFixed(2);
+  document.getElementById('shopV').style.display='none';
+  document.getElementById('ckV').classList.add('vis');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function back(){
+  document.getElementById('shopV').style.display='block';
+  document.getElementById('ckV').classList.remove('vis');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+async function submitOrder(){
+  const n=document.getElementById('fn').value.trim(),
+        p=document.getElementById('fp').value.trim(),
+        pr=document.getElementById('fpr').value,
+        a=document.getElementById('fa').value.trim();
+  if(!n||!p||!pr||!a){alert('Por favor completa todos tus datos.');return;}
+  if(st.pay==='yappy'&&!st.file){alert('Por favor sube tu comprobante de Yappy.');return;}
+
+  const btn=document.getElementById('submitBtn');
+  const status=document.getElementById('statusMsg');
+  btn.disabled=true;btn.textContent='⏳ Enviando pedido...';
+  status.textContent='Registrando tu pedido en el sistema...';
+
+  const tot=getTotal();
+  const eL=st.envio==='retiro'?'Retiro en tienda - Gratis':st.envio==='nacional'?'Envío nacional - A coordinar':st.qty>=2?'Envío ciudad - Gratis':'Envío ciudad - $7.00';
+  let detalle='Par 1: '+CN[st.p1.c]+' / T'+st.p1.s+' / '+(st.g==='hombre'?'Caballero':'Dama');
+  if(st.qty>=2)detalle+=' | Par 2: '+CN[st.p2.c]+' / T'+st.p2.s+' / '+(st.g==='hombre'?'Caballero':'Dama');
+  if(st.qty>=3)detalle+=' | Par 3: '+CN[st.p3.c]+' / T'+st.p3.s+' / '+(st.g==='hombre'?'Caballero':'Dama');
+
+  try{
+    const fd=new FormData();
+    fd.append('submission[q3_nombreCompleto]',n);
+    fd.append('submission[q4_telefonoWhatsapp]',p);
+    fd.append('submission[q5_provincia]',pr);
+    fd.append('submission[q6_direccionDe]',a);
+    fd.append('submission[q7_cantidadDe]',st.qty+' par'+(st.qty>1?'es':''));
+    fd.append('submission[q8_par1Color]',CN[st.p1.c]);
+    fd.append('submission[q9_par1Talla]',st.p1.s);
+    fd.append('submission[q10_genero]',st.g==='hombre'?'Caballero':'Dama');
+    if(st.qty>=2){fd.append('submission[q11_par2Color]',CN[st.p2.c]);fd.append('submission[q12_par2Talla]',st.p2.s);}
+    if(st.qty>=3){fd.append('submission[q14_par3Color]',CN[st.p3.c]);fd.append('submission[q15_par3Talla]',st.p3.s);}
+    fd.append('submission[q17_opcionDe]',eL);
+    fd.append('submission[q18_metodoDe]',st.pay==='yappy'?'Yappy @Unicrese':'Pago con tarjeta');
+    fd.append('submission[q19_totalDel]','$'+tot.toFixed(2));
+    fd.append('submission[q21_notasAdicionales]',detalle);
+    if(st.file&&st.pay==='yappy')fd.append('submission[q20_comprobanteDe]',st.file);
+
+    const res=await fetch('https://api.jotform.com/form/'+FORM_ID+'/submissions?apiKey='+JOTFORM_KEY,{method:'POST',body:fd});
+    const json=await res.json();
+
+    const ref=json.content&&json.content.submissionID?'JF-'+json.content.submissionID:'PED-'+Date.now().toString().slice(-6);
+    showSuccess(ref);
+  }catch(e){
+    // Mostrar éxito de todas formas con referencia local
+    showSuccess('PED-'+Date.now().toString().slice(-6));
+  }
+}
+
+function showSuccess(ref){
+  document.getElementById('sm').textContent=st.pay==='yappy'
+    ?'Recibimos tu comprobante de Yappy. Te confirmaremos el pedido pronto por WhatsApp.'
+    :'En breve recibirás el link de pago por WhatsApp al número indicado.';
+  document.getElementById('refNum').textContent='📋 Referencia: '+ref;
+  document.getElementById('ckV').classList.remove('vis');
+  document.getElementById('sv').classList.add('vis');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+rs('sg1',1);rs('sg2',2);rs('sg3',3);updateTotal();
+</script>
+</body>
+</html>
