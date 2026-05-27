@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Admin · Unicrese Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root{--black:#0a0a0a;--white:#fafafa;--accent:#c8f542;--gray:#888;--lightgray:#f2f2f2;--border:#e0e0e0;--radius:12px;--radius-sm:8px;
+--green:#2e7d32;--green-light:#e8f5e9;--yellow:#f57f17;--yellow-light:#fff8e1;--red:#c62828;--red-light:#ffebee;--blue:#1565c0;--blue-light:#e3f2fd;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:#f5f5f5;color:var(--black);min-height:100vh}
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--black)}
+.login-box{background:var(--white);border-radius:var(--radius);padding:2.5rem;width:100%;max-width:380px}
+.login-logo{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;margin-bottom:.25rem}
+.login-sub{font-size:13px;color:var(--gray);margin-bottom:2rem}
+.login-label{font-size:12px;font-weight:600;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px}
+.login-input{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:14px;font-family:'DM Sans',sans-serif;margin-bottom:1rem}
+.login-input:focus{outline:none;border-color:var(--black)}
+.login-btn{width:100%;padding:14px;background:var(--accent);color:var(--black);border:none;border-radius:var(--radius-sm);font-size:15px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif}
+.login-error{font-size:13px;color:var(--red);margin-top:.75rem;text-align:center;display:none}
+.dash{display:none}
+.topbar{background:var(--black);padding:.9rem 1.5rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.topbar-logo{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--white);letter-spacing:2px}
+.topbar-right{display:flex;align-items:center;gap:1rem}
+.topbar-user{font-size:13px;color:#888}
+.logout-btn{font-size:12px;color:#555;cursor:pointer;background:none;border:0.5px solid #333;border-radius:20px;padding:6px 12px;font-family:'DM Sans',sans-serif}
+.logout-btn:hover{color:var(--white)}
+.dash-body{max-width:1200px;margin:0 auto;padding:1.5rem}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem}
+.stat-card{background:var(--white);border-radius:var(--radius);padding:1.25rem;border:1px solid var(--border)}
+.stat-label{font-size:12px;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.5rem}
+.stat-value{font-family:'Bebas Neue',sans-serif;font-size:36px;color:var(--black);line-height:1}
+.stat-sub{font-size:12px;color:var(--gray);margin-top:.25rem}
+.stat-card.green{border-left:3px solid var(--green)}
+.stat-card.yellow{border-left:3px solid #f57f17}
+.stat-card.blue{border-left:3px solid var(--blue)}
+.stat-card.accent{border-left:3px solid var(--accent)}
+.filters-bar{background:var(--white);border-radius:var(--radius);padding:1rem 1.25rem;margin-bottom:1rem;display:flex;gap:.75rem;align-items:center;flex-wrap:wrap;border:1px solid var(--border)}
+.filter-select{padding:8px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-family:'DM Sans',sans-serif;background:var(--white);cursor:pointer}
+.search-input{padding:8px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-family:'DM Sans',sans-serif;flex:1;min-width:150px}
+.search-input:focus,.filter-select:focus{outline:none;border-color:var(--black)}
+.refresh-btn{padding:8px 16px;background:var(--black);color:var(--white);border:none;border-radius:var(--radius-sm);font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif}
+.export-btn{padding:8px 16px;background:var(--green-light);color:var(--green);border:1px solid var(--green);border-radius:var(--radius-sm);font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif}
+.table-wrap{background:var(--white);border-radius:var(--radius);border:1px solid var(--border);overflow:hidden}
+.table-header{padding:1rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.table-title{font-size:15px;font-weight:600}
+.table-count{font-size:13px;color:var(--gray)}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;padding:.75rem 1rem;font-size:11px;font-weight:600;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border);background:#fafafa;white-space:nowrap}
+td{padding:.85rem 1rem;font-size:13px;border-bottom:0.5px solid var(--border);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#fafafa}
+.ref-code{font-weight:600;font-size:12px}
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
+.badge.pendiente{background:var(--yellow-light);color:var(--yellow)}
+.badge.pagado{background:var(--green-light);color:var(--green)}
+.badge.enviado{background:var(--blue-light);color:var(--blue)}
+.badge.completado{background:#c8e6c9;color:#1b5e20}
+.badge.cancelado{background:var(--red-light);color:var(--red)}
+.pay-badge{display:inline-block;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:500}
+.pay-badge.yappy{background:#e8f5e9;color:#2e7d32}
+.pay-badge.tarjeta{background:#e3f2fd;color:#1565c0}
+.action-btn{padding:5px 12px;border-radius:var(--radius-sm);font-size:11px;font-weight:600;cursor:pointer;border:none;font-family:'DM Sans',sans-serif}
+.btn-ver{background:var(--black);color:var(--white)}
+.btn-ver:hover{opacity:.8}
+.empty-state{text-align:center;padding:3rem;color:var(--gray)}
+.loading{text-align:center;padding:2rem;color:var(--gray);font-size:14px}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;display:none;align-items:center;justify-content:center;padding:1rem}
+.modal-overlay.vis{display:flex}
+.modal{background:var(--white);border-radius:var(--radius);padding:0;width:100%;max-width:560px;max-height:90vh;overflow-y:auto}
+.modal-head{background:var(--black);color:var(--white);padding:1.25rem 1.5rem;border-radius:var(--radius) var(--radius) 0 0;display:flex;align-items:center;justify-content:space-between}
+.modal-head-title{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px}
+.modal-close-btn{background:none;border:none;color:#888;font-size:22px;cursor:pointer;line-height:1}
+.modal-body{padding:1.5rem}
+.modal-section{margin-bottom:1.25rem}
+.modal-section-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--gray);margin-bottom:.75rem;padding-bottom:.4rem;border-bottom:1px solid var(--border)}
+.modal-row{display:flex;justify-content:space-between;padding:.5rem 0;font-size:13px;border-bottom:0.5px solid #f0f0f0}
+.modal-row:last-child{border-bottom:none}
+.modal-key{color:var(--gray);font-weight:500}
+.modal-val{font-weight:500;text-align:right;max-width:60%}
+
+/* PROCESO DE AUTORIZACIÓN */
+.auth-box{background:var(--lightgray);border-radius:var(--radius-sm);padding:1.25rem;margin-bottom:1rem}
+.auth-box-title{font-size:13px;font-weight:600;margin-bottom:.75rem;display:flex;align-items:center;gap:.5rem}
+.auth-input{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:14px;font-family:'DM Sans',sans-serif;background:var(--white);margin-bottom:.75rem;letter-spacing:2px;font-weight:600}
+.auth-input:focus{outline:none;border-color:var(--black)}
+.auth-input.filled{border-color:var(--green);background:#f8fff8}
+
+/* ESTADO DROPDOWN */
+.estado-box{background:var(--lightgray);border-radius:var(--radius-sm);padding:1.25rem;margin-bottom:1rem}
+.estado-box-title{font-size:13px;font-weight:600;margin-bottom:.75rem}
+.estado-select{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:14px;font-family:'DM Sans',sans-serif;background:var(--white);margin-bottom:.75rem;cursor:pointer}
+.estado-select:focus{outline:none;border-color:var(--black)}
+
+/* ENTREGA */
+.entrega-box{background:#e3f2fd;border-radius:var(--radius-sm);padding:1.25rem;margin-bottom:1rem;border:1px solid #90caf9}
+.entrega-box-title{font-size:13px;font-weight:600;margin-bottom:.75rem;color:var(--blue)}
+.entrega-select{width:100%;padding:10px 12px;border:1.5px solid #90caf9;border-radius:var(--radius-sm);font-size:14px;font-family:'DM Sans',sans-serif;background:var(--white);cursor:pointer;margin-bottom:.75rem}
+
+/* BOTONES ACCION MODAL */
+.modal-footer{padding:1rem 1.5rem;border-top:1px solid var(--border);display:flex;gap:.75rem}
+.save-btn{flex:1;padding:12px;background:var(--accent);color:var(--black);border:none;border-radius:var(--radius-sm);font-size:14px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif}
+.save-btn:hover{opacity:.9}
+.cancel-modal-btn{padding:12px 20px;background:var(--lightgray);color:var(--gray);border:none;border-radius:var(--radius-sm);font-size:14px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif}
+.toast{position:fixed;bottom:2rem;right:2rem;background:var(--black);color:var(--white);padding:.9rem 1.5rem;border-radius:var(--radius-sm);font-size:14px;font-weight:500;z-index:300;display:none;animation:slideIn .3s ease}
+@keyframes slideIn{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+@media(max-width:768px){
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+  .filters-bar{flex-direction:column;align-items:stretch}
+  .dash-body{padding:1rem}
+  th,td{padding:.6rem .75rem;font-size:12px}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-wrap" id="loginWrap">
+  <div class="login-box">
+    <div class="login-logo">UNICRESE</div>
+    <div class="login-sub">Panel de administración · Pedidos Peak Taichi</div>
+    <label class="login-label">Usuario</label>
+    <input class="login-input" type="text" id="loginUser" placeholder="usuario"/>
+    <label class="login-label">Contraseña</label>
+    <input class="login-input" type="password" id="loginPass" placeholder="••••••••"/>
+    <button class="login-btn" onclick="doLogin()">Entrar →</button>
+    <div class="login-error" id="loginError">Usuario o contraseña incorrectos</div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="dash" id="dash">
+  <div class="topbar">
+    <div class="topbar-logo">UNICRESE · ADMIN</div>
+    <div class="topbar-right">
+      <span class="topbar-user" id="topbarUser"></span>
+      <button class="logout-btn" onclick="doLogout()">Cerrar sesión</button>
+    </div>
+  </div>
+
+  <div class="dash-body">
+    <div class="stats-grid">
+      <div class="stat-card accent">
+        <div class="stat-label">Total pedidos</div>
+        <div class="stat-value" id="statTotal">—</div>
+        <div class="stat-sub">todos los estados</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-label">Ingresos confirmados</div>
+        <div class="stat-value" id="statIngresos">—</div>
+        <div class="stat-sub">pedidos pagados</div>
+      </div>
+      <div class="stat-card yellow">
+        <div class="stat-label">Pendientes</div>
+        <div class="stat-value" id="statPendientes">—</div>
+        <div class="stat-sub">requieren seguimiento</div>
+      </div>
+      <div class="stat-card blue">
+        <div class="stat-label">Pares vendidos</div>
+        <div class="stat-value" id="statPares">—</div>
+        <div class="stat-sub">pagados y enviados</div>
+      </div>
+    </div>
+
+    <div class="filters-bar">
+      <input class="search-input" type="text" id="searchInput" placeholder="🔍 Buscar por nombre, referencia, teléfono..." oninput="filterTable()"/>
+      <select class="filter-select" id="filterEstado" onchange="filterTable()">
+        <option value="">Todos los estados</option>
+        <option value="Pendiente">Pendiente</option>
+        <option value="Autorizado">Autorizado</option>
+        <option value="Pagado">Pagado</option>
+        <option value="En preparación">En preparación</option>
+        <option value="Enviado">Enviado</option>
+        <option value="Entregado">Entregado</option>
+        <option value="Completado">Completado</option>
+        <option value="Cancelado">Cancelado</option>
+      </select>
+      <select class="filter-select" id="filterPago" onchange="filterTable()">
+        <option value="">Todos los pagos</option>
+        <option value="Yappy">Yappy</option>
+        <option value="Tarjeta">Tarjeta</option>
+      </select>
+      <input type="date" class="filter-select" id="filterDesde" onchange="filterTable()" title="Desde"/>
+      <input type="date" class="filter-select" id="filterHasta" onchange="filterTable()" title="Hasta"/>
+      <button class="refresh-btn" onclick="clearDates()" style="background:#555">✕ Fechas</button>
+      <button class="refresh-btn" onclick="loadPedidos()">↻ Actualizar</button>
+      <button class="export-btn" onclick="exportCSV()">↓ Exportar CSV</button>
+    </div>
+
+    <div class="table-wrap">
+      <div class="table-header">
+        <div class="table-title">Pedidos</div>
+        <div class="table-count" id="tableCount"></div>
+      </div>
+      <div id="tableBody"><div class="loading">⏳ Cargando pedidos...</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" id="modal">
+    <div class="modal-head">
+      <div class="modal-head-title" id="modalTitle">Pedido</div>
+      <button class="modal-close-btn" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+
+      <!-- INFO CLIENTE Y PEDIDO -->
+      <div class="modal-section">
+        <div class="modal-section-title">👤 Datos del cliente</div>
+        <div id="modalCliente"></div>
+      </div>
+      <div class="modal-section">
+        <div class="modal-section-title">👟 Detalle del pedido</div>
+        <div id="modalPedido"></div>
+      </div>
+
+      <!-- AUTORIZACIÓN DE PAGO -->
+      <div class="auth-box" id="authBox">
+        <div class="auth-box-title" id="authBoxTitle">🔐 Autorización de pago</div>
+        <label style="font-size:12px;color:var(--gray);font-weight:600;display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">Código de autorización</label>
+        <input class="auth-input" type="text" id="authCode" placeholder="Ej. 123456" oninput="this.classList.toggle('filled',this.value.length>3)" maxlength="20"/>
+        <label style="font-size:12px;color:var(--gray);font-weight:600;display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">Notas de autorización (opcional)</label>
+        <input class="auth-input" type="text" id="authNotes" placeholder="Ej. Pago confirmado por BAC" style="letter-spacing:0;font-weight:400"/>
+      </div>
+
+      <!-- ESTADO DEL PEDIDO -->
+      <div class="estado-box">
+        <div class="estado-box-title">📋 Estado del pedido</div>
+        <select class="estado-select" id="estadoSelect">
+          <option value="Pendiente">⏳ Pendiente</option>
+          <option value="Autorizado">✅ Autorizado</option>
+          <option value="Pagado">💰 Pagado</option>
+          <option value="En preparación">📦 En preparación</option>
+          <option value="Enviado">🚚 Enviado</option>
+          <option value="Entregado">🎉 Entregado</option>
+          <option value="Completado">⭐ Completado</option>
+          <option value="Cancelado">❌ Cancelado</option>
+        </select>
+      </div>
+
+      <!-- ENTREGA -->
+      <div class="entrega-box">
+        <div class="entrega-box-title">🚚 Estado de entrega</div>
+        <select class="entrega-select" id="entregaSelect">
+          <option value="Pendiente de entrega">📍 Pendiente de entrega</option>
+          <option value="Listo para retiro">🏪 Listo para retiro en tienda</option>
+          <option value="En camino">🛵 En camino al cliente</option>
+          <option value="Entregado al cliente">✅ Entregado al cliente</option>
+          <option value="No se pudo entregar">⚠️ No se pudo entregar</option>
+        </select>
+      </div>
+
+    </div>
+    <div class="modal-footer">
+      <button class="cancel-modal-btn" onclick="closeModal()">Cancelar</button>
+      <button class="save-btn" onclick="saveChanges()">💾 Guardar cambios</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+const SUPABASE_URL='https://cfbvhihnocjqzrrmbycb.supabase.co';
+const SUPABASE_KEY='sb_publishable_gq8CdDgas8GkgqGuMA2foA_d5lZjpvA';
+const USERS={'admin':'unicrese2026','ventas':'peak2026'};
+
+let allPedidos=[];
+let currentPedidoId=null;
+let currentUser='';
+
+function doLogin(){
+  const u=document.getElementById('loginUser').value.trim();
+  const p=document.getElementById('loginPass').value;
+  if(USERS[u]&&USERS[u]===p){
+    currentUser=u;
+    document.getElementById('loginWrap').style.display='none';
+    document.getElementById('dash').style.display='block';
+    document.getElementById('topbarUser').textContent='👤 '+u;
+    loadPedidos();
+  } else {
+    document.getElementById('loginError').style.display='block';
+  }
+}
+
+function doLogout(){
+  currentUser='';
+  document.getElementById('loginWrap').style.display='flex';
+  document.getElementById('dash').style.display='none';
+  document.getElementById('loginUser').value='';
+  document.getElementById('loginPass').value='';
+}
+
+async function loadPedidos(){
+  document.getElementById('tableBody').innerHTML='<div class="loading">⏳ Cargando pedidos...</div>';
+  try{
+    const res=await fetch(SUPABASE_URL+'/rest/v1/pedidos?select=*&order=created_at.desc',{
+      headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}
+    });
+    allPedidos=await res.json();
+    renderStats();
+    filterTable();
+  }catch(e){
+    document.getElementById('tableBody').innerHTML='<div class="empty-state"><div>⚠️</div>Error cargando pedidos</div>';
+  }
+}
+
+function renderStats(){
+  const total=allPedidos.length;
+  const pagados=allPedidos.filter(p=>['Pagado','Autorizado','Enviado','Entregado','Completado'].includes(p.estado));
+  const pendientes=allPedidos.filter(p=>p.estado==='Pendiente');
+  const ingresos=pagados.reduce((s,p)=>s+(parseFloat(p.total)||0),0);
+  const pares=pagados.reduce((s,p)=>s+(parseInt(p.cantidad)||0),0);
+  document.getElementById('statTotal').textContent=total;
+  document.getElementById('statIngresos').textContent='$'+ingresos.toFixed(2);
+  document.getElementById('statPendientes').textContent=pendientes.length;
+  document.getElementById('statPares').textContent=pares;
+}
+
+function filterTable(){
+  const search=document.getElementById('searchInput').value.toLowerCase();
+  const estado=document.getElementById('filterEstado').value;
+  const pago=document.getElementById('filterPago').value;
+  const desde=document.getElementById('filterDesde').value;
+  const hasta=document.getElementById('filterHasta').value;
+  let filtered=allPedidos.filter(p=>{
+    const matchSearch=!search||
+      (p.nombre||'').toLowerCase().includes(search)||
+      (p.apellido||'').toLowerCase().includes(search)||
+      (p.referencia||'').toLowerCase().includes(search)||
+      (p.telefono||'').toLowerCase().includes(search);
+    const matchEstado=!estado||p.estado===estado;
+    const matchPago=!pago||(p.metodo_pago||'').includes(pago);
+    let matchFecha=true;
+    if(p.created_at){
+      const fecha=new Date(p.created_at);
+      if(desde) matchFecha=matchFecha&&fecha>=new Date(desde+'T00:00:00');
+      if(hasta) matchFecha=matchFecha&&fecha<=new Date(hasta+'T23:59:59');
+    }
+    return matchSearch&&matchEstado&&matchPago&&matchFecha;
+  });
+  document.getElementById('tableCount').textContent=filtered.length+' pedido'+(filtered.length!==1?'s':'');
+  renderTable(filtered);
+}
+
+function clearDates(){
+  document.getElementById('filterDesde').value='';
+  document.getElementById('filterHasta').value='';
+  filterTable();
+}
+
+function renderTable(pedidos){
+  if(!pedidos.length){
+    document.getElementById('tableBody').innerHTML='<div class="empty-state"><div style="font-size:40px;margin-bottom:.75rem">📭</div>No hay pedidos que coincidan</div>';
+    return;
+  }
+  const rows=pedidos.map(p=>{
+    const fecha=p.created_at?new Date(p.created_at).toLocaleDateString('es-PA',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'}):'—';
+    const estado=(p.estado||'Pendiente').toLowerCase().replace(/ /g,'-');
+    const estadoBadge=`<span class="badge ${estado}">${p.estado||'Pendiente'}</span>`;
+    const pagoBadge=(p.metodo_pago||'').includes('Yappy')
+      ?'<span class="pay-badge yappy">📱 Yappy</span>'
+      :'<span class="pay-badge tarjeta">💳 Tarjeta</span>';
+    const authIcon=p.codigo_autorizacion?'🔐 '+p.codigo_autorizacion:'—';
+    return `<tr>
+      <td><span class="ref-code">${p.referencia||'—'}</span></td>
+      <td>${fecha}</td>
+      <td>${p.nombre||''} ${p.apellido||''}</td>
+      <td>${p.cantidad||1} par${(p.cantidad||1)>1?'es':''}</td>
+      <td><strong>$${parseFloat(p.total||0).toFixed(2)}</strong></td>
+      <td>${pagoBadge}</td>
+      <td style="font-size:11px;color:var(--gray)">${authIcon}</td>
+      <td>${estadoBadge}</td>
+      <td><button class="action-btn btn-ver" onclick='openModal(${p.id})'>Gestionar</button></td>
+    </tr>`;
+  }).join('');
+  document.getElementById('tableBody').innerHTML=`
+    <table>
+      <thead><tr>
+        <th>Referencia</th><th>Fecha</th><th>Cliente</th><th>Pares</th>
+        <th>Total</th><th>Pago</th><th>Auth</th><th>Estado</th><th>Acción</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+
+function openModal(id){
+  const p=allPedidos.find(x=>x.id===id);
+  if(!p)return;
+  currentPedidoId=id;
+
+  document.getElementById('modalTitle').textContent='📋 '+( p.referencia||'Pedido');
+
+  // Cliente
+  document.getElementById('modalCliente').innerHTML=`
+    <div class="modal-row"><span class="modal-key">Nombre</span><span class="modal-val">${p.nombre||''} ${p.apellido||''}</span></div>
+    <div class="modal-row"><span class="modal-key">Teléfono</span><span class="modal-val">${p.telefono||'—'}</span></div>
+    <div class="modal-row"><span class="modal-key">Provincia</span><span class="modal-val">${p.provincia||'—'}</span></div>
+    <div class="modal-row"><span class="modal-key">Dirección</span><span class="modal-val">${p.direccion||'—'}</span></div>`;
+
+  // Pedido
+  let pares=`<div class="modal-row"><span class="modal-key">Par 1</span><span class="modal-val">${p.par1_color||'—'} · T${p.par1_talla||'—'} · ${p.genero||'—'}</span></div>`;
+  if(p.par2_color&&p.par2_color!=='null'&&p.par2_color!=='N/A')
+    pares+=`<div class="modal-row"><span class="modal-key">Par 2</span><span class="modal-val">${p.par2_color} · T${p.par2_talla}</span></div>`;
+  if(p.par3_color&&p.par3_color!=='null'&&p.par3_color!=='N/A')
+    pares+=`<div class="modal-row"><span class="modal-key">Par 3</span><span class="modal-val">${p.par3_color} · T${p.par3_talla}</span></div>`;
+  document.getElementById('modalPedido').innerHTML=`
+    ${pares}
+    <div class="modal-row"><span class="modal-key">Entrega</span><span class="modal-val">${p.entrega||'—'}</span></div>
+    <div class="modal-row"><span class="modal-key">Método de pago</span><span class="modal-val">${p.metodo_pago||'—'}</span></div>
+    <div class="modal-row"><span class="modal-key">Total</span><span class="modal-val"><strong>$${parseFloat(p.total||0).toFixed(2)}</strong></span></div>`;
+
+  // Auth box — personalizar según método de pago
+  const esYappy=(p.metodo_pago||'').includes('Yappy');
+  document.getElementById('authBoxTitle').textContent=esYappy
+    ?'📱 Verificación de Yappy'
+    :'💳 Autorización de tarjeta';
+  document.getElementById('authCode').value=p.codigo_autorizacion||'';
+  document.getElementById('authCode').placeholder=esYappy?'Ej. Ref. Yappy 789456':'Ej. Auth BAC 123456';
+  document.getElementById('authNotes').value=p.notas_autorizacion||'';
+  document.getElementById('authNotes').placeholder=esYappy?'Ej. Yappy confirmado a las 3:00pm':'Ej. Autorizado por BAC Credomatic';
+
+  // Estado actual
+  const estadoSel=document.getElementById('estadoSelect');
+  estadoSel.value=p.estado||'Pendiente';
+
+  // Entrega actual
+  const entregaSel=document.getElementById('entregaSelect');
+  entregaSel.value=p.estado_entrega||'Pendiente de entrega';
+
+  document.getElementById('modalOverlay').classList.add('vis');
+}
+
+function closeModal(){
+  document.getElementById('modalOverlay').classList.remove('vis');
+  currentPedidoId=null;
+}
+
+async function saveChanges(){
+  if(!currentPedidoId)return;
+  const authCode=document.getElementById('authCode').value.trim();
+  const authNotes=document.getElementById('authNotes').value.trim();
+  const estado=document.getElementById('estadoSelect').value;
+  const estadoEntrega=document.getElementById('entregaSelect').value;
+
+  // Validar que si está autorizando necesita código
+  if((estado==='Autorizado'||estado==='Pagado')&&!authCode){
+    alert('Por favor ingresa el código de autorización antes de aprobar el pedido.');
+    document.getElementById('authCode').focus();
+    return;
+  }
+
+  const saveBtn=document.querySelector('.save-btn');
+  saveBtn.textContent='⏳ Guardando...';
+  saveBtn.disabled=true;
+
+  try{
+    await fetch(SUPABASE_URL+'/rest/v1/pedidos?id=eq.'+currentPedidoId,{
+      method:'PATCH',
+      headers:{
+        'Content-Type':'application/json',
+        'apikey':SUPABASE_KEY,
+        'Authorization':'Bearer '+SUPABASE_KEY,
+        'Prefer':'return=minimal'
+      },
+      body:JSON.stringify({
+        estado:estado,
+        estado_entrega:estadoEntrega,
+        codigo_autorizacion:authCode||null,
+        notas_autorizacion:authNotes||null,
+        actualizado_por:currentUser,
+        updated_at:new Date().toISOString()
+      })
+    });
+    closeModal();
+    showToast('✅ Pedido actualizado correctamente');
+    await loadPedidos();
+  }catch(e){
+    alert('Error guardando cambios. Intenta de nuevo.');
+  }finally{
+    saveBtn.textContent='💾 Guardar cambios';
+    saveBtn.disabled=false;
+  }
+}
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.style.display='block';
+  setTimeout(()=>t.style.display='none',3000);
+}
+
+function exportCSV(){
+  if(!allPedidos.length){alert('No hay pedidos para exportar');return;}
+  const headers=['Referencia','Fecha','Nombre','Apellido','Teléfono','Provincia','Dirección','Género','Cantidad','Par1 Color','Par1 Talla','Par2 Color','Par2 Talla','Par3 Color','Par3 Talla','Entrega','Método Pago','Total','Estado','Estado Entrega','Cód. Autorización','Notas Auth','Actualizado por'];
+  const rows=allPedidos.map(p=>[
+    p.referencia,
+    p.created_at?new Date(p.created_at).toLocaleString('es-PA'):'',
+    p.nombre,p.apellido,p.telefono,p.provincia,p.direccion,p.genero,p.cantidad,
+    p.par1_color,p.par1_talla,p.par2_color||'',p.par2_talla||'',p.par3_color||'',p.par3_talla||'',
+    p.entrega,p.metodo_pago,p.total,p.estado,p.estado_entrega||'',p.codigo_autorizacion||'',p.notas_autorizacion||'',p.actualizado_por||''
+  ].map(v=>`"${v||''}"`).join(','));
+  const csv=[headers.join(','),...rows].join('\n');
+  const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download='pedidos-unicrese-'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click();URL.revokeObjectURL(url);
+}
+
+document.getElementById('loginPass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+document.getElementById('modalOverlay').addEventListener('click',e=>{if(e.target===document.getElementById('modalOverlay'))closeModal();});
+</script>
+</body>
+</html>
